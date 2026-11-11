@@ -44,7 +44,7 @@
           },
           "conditions": [
             {
-              "id": "91cfc764-a791-402b-9059-cadf1f5ff431",
+              "id": "e494b4b1-d213-4aca-9534-316c9f483762",
               "leftValue": "={{ $json.ok }}",
               "rightValue": "",
               "operator": {
@@ -117,7 +117,7 @@
           },
           "conditions": [
             {
-              "id": "a8d7e35c-0ccb-40a9-af8e-c7de1504db0d",
+              "id": "d229bb8c-5328-4089-bf96-bfd23666dd1b",
               "leftValue": "={{ $json.success }}",
               "rightValue": "",
               "operator": {
@@ -229,7 +229,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const lead = $('Validate').first().json;\nconst res = $input.first().json;\n\n// Defaults when Claude could not judge (API error, refusal, cut-off reply):\n// never auto-confirm, always tell the owner.\nlet t = { category: 'other', spam: false, serious: true, language: '', topic: '', summary: '',\n          questions: [], draft_reply: '' };\nlet problem = '';\ntry {\n  if (res.stop_reason !== 'end_turn') throw new Error(`stop_reason=${res.stop_reason || res.error?.type || 'none'}`);\n  const text = (res.content || []).find(b => b.type === 'text')?.text;\n  t = { ...t, ...JSON.parse(text) };\n} catch (e) {\n  problem = `Claude negalėjo įvertinti (${e.message}). Perskaityk žinutę pats.`;\n}\n\n// The topic goes into an email to an address anyone can type, so keep it plain and short.\nlet topic = String(t.topic || '').replace(/https?:\\S+|www\\.\\S+/gi, '').replace(/[^\\p{L}\\p{N} ,.'&-]/gu, '').trim();\ntopic = topic.split(/\\s+/).slice(0, 8).join(' ').slice(0, 80) || 'your project';\nconst firstName = lead.name.split(/\\s+/)[0].replace(/[^\\p{L}' -]/gu, '').slice(0, 40) || 'there';\n\nreturn [{ json: {\n  // Columns of the Google Sheet (same names as its header row)\n  Received: lead.received,\n  Name: lead.name,\n  Email: lead.email,\n  Company: lead.company,\n  Message: lead.message,\n  Category: t.category,\n  Serious: t.spam ? 'spam' : (t.serious ? 'yes' : 'maybe'),\n  Summary: problem || t.summary,\n  'Draft reply': t.draft_reply,\n  Status: t.spam ? 'Spam' : 'New',\n  // For the emails\n  spam: Boolean(t.spam) && !problem,\n  confirm: !t.spam && !problem,\n  topic, firstName,\n  questions: (t.questions || []).slice(0, 3),\n  config: lead.config,\n} }];"
+        "jsCode": "const lead = $('Validate').first().json;\nconst res = $input.first().json;\n\n// Defaults when Claude could not judge (API error, refusal, cut-off reply):\n// never auto-confirm, always tell the owner.\nlet t = { category: 'other', spam: false, serious: true, language: '', topic: '', summary: '',\n          questions: [], draft_reply: '' };\nlet problem = '';\ntry {\n  if (res.stop_reason !== 'end_turn') throw new Error(`stop_reason=${res.stop_reason || res.error?.type || 'none'}`);\n  const text = (res.content || []).find(b => b.type === 'text')?.text;\n  t = { ...t, ...JSON.parse(text) };\n} catch (e) {\n  problem = `Claude negalėjo įvertinti (${e.message}). Perskaityk žinutę pats.`;\n}\n\n// The topic goes into an email to an address anyone can type, so keep it plain and short.\nlet topic = String(t.topic || '').replace(/https?:\\S+|www\\.\\S+/gi, '').replace(/[^\\p{L}\\p{N} ,.'&-]/gu, '').trim();\ntopic = topic.split(/\\s+/).slice(0, 8).join(' ').slice(0, 80) || 'your project';\ntopic = topic.replace(/\\b(ai|crm|api|seo|faq)\\b/gi, m => m.toUpperCase());   // \"an AI chat assistant\"\nconst firstName = lead.name.split(/\\s+/)[0].replace(/[^\\p{L}' -]/gu, '').slice(0, 40) || 'there';\n\nreturn [{ json: {\n  // Columns of the Google Sheet (same names as its header row)\n  Received: lead.received,\n  Name: lead.name,\n  Email: lead.email,\n  Company: lead.company,\n  Message: lead.message,\n  Category: t.category,\n  Serious: t.spam ? 'spam' : (t.serious ? 'yes' : 'maybe'),\n  Summary: problem || t.summary,\n  'Draft reply': t.draft_reply,\n  Status: t.spam ? 'Spam' : 'New',\n  // For the emails\n  spam: Boolean(t.spam) && !problem,\n  confirm: !t.spam && !problem,\n  topic, firstName,\n  questions: (t.questions || []).slice(0, 3),\n  config: lead.config,\n} }];"
       },
       "id": "bf8f8f25-a478-5e17-acab-3b8cba4591b3",
       "name": "Parse",
@@ -285,7 +285,7 @@
           },
           "conditions": [
             {
-              "id": "21dc1a25-f565-4a3c-975e-071d51a288e7",
+              "id": "a24aa672-cc75-4ef7-8eb5-c54fa1d7429e",
               "leftValue": "={{ !$('Parse').first().json.spam }}",
               "rightValue": "",
               "operator": {
@@ -319,7 +319,7 @@
           },
           "conditions": [
             {
-              "id": "db4cc367-b17c-48a8-96f1-b396605507e2",
+              "id": "fba79ca1-cf6e-4253-bd94-e165647330ae",
               "leftValue": "={{ $('Parse').first().json.confirm }}",
               "rightValue": "",
               "operator": {

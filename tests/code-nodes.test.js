@@ -20,7 +20,7 @@ const reply = (o, stop = 'end_turn') => ({ stop_reason: stop, content: [{ type: 
 const t = { category: 'chat_assistant', spam: false, serious: true, language: 'en', topic: 'An AI chatbot <script>alert(1)</script> see https://evil.com now!!', summary: 'Klinika nori boto.', questions: ['Which pages?'], draft_reply: 'Hi Jane' };
 let p = run(code('Parse'), reply(t), { Validate: v })[0].json;
 ok(p.confirm && !p.spam && p.Status === 'New' && p.Serious === 'yes', 'normal lead: confirm + owner');
-ok(!/[<>:\/]/.test(p.topic) && !p.topic.includes('evil') && p.topic.split(' ').length <= 8, 'topic sanitized: ' + JSON.stringify(p.topic));
+ok(p.topic.startsWith("An AI chatbot") && !/[<>:\/]/.test(p.topic) && !p.topic.includes('evil') && p.topic.split(' ').length <= 8, 'topic sanitized: ' + JSON.stringify(p.topic));
 ok(p.firstName === 'Jane', 'first name');
 p = run(code('Parse'), reply({ ...t, spam: true }), { Validate: v })[0].json;
 ok(p.spam && !p.confirm && p.Status === 'Spam', 'spam: logged only');
