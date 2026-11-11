@@ -1,0 +1,10 @@
+# Caddy site for n8n. Copy to the directory the main Caddyfile imports
+# (e.g. /opt/caddy-sites/) and reload Caddy. Change the domain to yours.
+automation.pulauskas.dev {
+	encode zstd gzip
+	reverse_proxy n8n:5678
+	# Request logs would hold contact-form visitors' addresses; n8n keeps what it needs.
+	log {
+		output discard
+	}
+}

@@ -1,0 +1,26 @@
+# n8n behind an existing Caddy reverse proxy (see README.md).
+# No port is published: Caddy reaches the container over its Docker network.
+
+services:
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:2.47.3
+    env_file: ../.env
+    restart: unless-stopped
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - proxy
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  n8n_data:
+
+networks:
+  proxy:
+    external: true
+    # The Docker network of the Caddy container (`docker network ls`), set in .env.
+    name: ${PROXY_NETWORK:?Set PROXY_NETWORK in .env to the Caddy container's network}
