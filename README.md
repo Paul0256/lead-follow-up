@@ -63,8 +63,14 @@ tests/code-nodes.test.js       tests of the Code nodes: node tests/code-nodes.te
    | Check Turnstile | Custom Auth | `{"body": {"secret": "<Turnstile secret key>"}}` |
    | Ask Claude | Header Auth | name `x-api-key`, value: Anthropic API key |
    | Log to Google Sheets | Google Service Account | service account email + private key |
-   | Both email nodes | SMTP | the sending provider (e.g. Resend: `smtp.resend.com`, port 465, SSL, user `resend`, password: API key) |
+   | Both email nodes | SMTP | the sending provider (e.g. Resend: `smtp.resend.com`, port 587 with SSL/TLS off (STARTTLS), user `resend`, password: API key). Many hosts (Hetzner among them) block outgoing port 465. |
 
+   **Check after adding the credentials:** in n8n 2.47 connecting a credential
+   in **Ask Claude** can drop the node's body and its `anthropic-version`
+   header. Open the node and confirm *Send Headers* has
+   `anthropic-version: 2023-06-01` and *Send Body* is on (JSON, expression
+   `{{ JSON.stringify($json.body) }}`). Without them Claude answers
+   "request body is not valid JSON".
 4. Edit `CONFIG` at the top of the **Validate** node (owner email, sender,
    sheet link) and the sheet ID in **Log to Google Sheets**. The sheet's first
    row: `Received, Name, Email, Company, Message, Category, Serious, Summary,
